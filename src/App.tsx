@@ -1,34 +1,53 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { useMemo, useState } from 'react';
+import './App.css';
+import SimpleListSwap from './examples/SimpleListSwap';
+import SimpleSwap from './examples/SimpleSwap';
+
+interface ExampleInfo {
+  id: string;
+  Component: React.FC;
+  displayName: string;
+}
+
+const ExampleList: ExampleInfo[] = [SimpleSwap, SimpleListSwap];
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [currentExample, setCurrentExample] = useState<ExampleInfo>(SimpleSwap);
+
+  const handleSelectExample = (ev: any) => {
+    const selectedId = ev.target.value;
+    let selectedExample = ExampleList.find(
+      (x) => x.id === selectedId
+    ) as ExampleInfo;
+    setCurrentExample(selectedExample);
+  };
+
+  const CurrentComponent = useMemo(
+    () => currentExample?.Component,
+    [currentExample]
+  );
 
   return (
     <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <section>
+        <label htmlFor="select-example">Select example</label>
+        <select
+          name="select-example"
+          id="select-example"
+          placeholder="Select Example"
+          value={currentExample?.id}
+          onChange={handleSelectExample}
+        >
+          {ExampleList.map((currExample) => (
+            <option key={currExample.id} value={currExample.id}>
+              {currExample.displayName}
+            </option>
+          ))}
+        </select>
+      </section>
+      <div>{CurrentComponent && <CurrentComponent />}</div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
