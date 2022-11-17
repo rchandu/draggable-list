@@ -41,18 +41,31 @@ function getItemLabelFn<T extends ObjectItemType>(
   }
 }
 
+const DragIndicator = styled.div`
+  position: absolute;
+  pointer-events: none;
+  background-color: green;
+  left: 0;
+  width: 100%;
+  opacity: 0.2;
+`;
+
 const ParentContainer = styled.ul`
   display: flex;
   flex-direction: column;
   list-style-type: none;
   gap: 16px;
+  margin: 0px;
+  padding: 0;
+  position: relative;
 `;
 
 const ChildContainer = styled.li`
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px dotted blue;
+  border: 2px solid transparent;
+  border: 2px solid black;
   padding: 16px;
   cursor: move;
 `;
@@ -62,28 +75,62 @@ export function DraggableList<T extends ObjectItemType>(
 ) {
   const [orderedItems, setOrderedItems] = useState<WrappedItem[]>([]);
   const swapItemsRef = useRef<SwapTarget | null>();
+  const [isDragging, setIsDragging] = useState(false);
+  const dragElRef = useRef<HTMLDivElement | null>(null);
+  const parentRef = useRef<HTMLUListElement | null>(null);
 
   useEffect(() => {
     setOrderedItems(wrapItems(props.items));
   }, [props.items]);
 
-  const handleMouseDown = (ev: any) => {
+  const handleStartDragging = (ev: any) => {
     ev.preventDefault();
     ev.stopPropagation();
     const target = ev.target;
     const startId = target.getAttribute('data-swap-id');
-    swapItemsRef.current = { startId };
+    if (startId) {
+      swapItemsRef.current = { startId };
+      setIsDragging(true);
+    }
+  };
+
+  const handleStopDragging = (ev: any) => {
+    if (swapItemsRef.current?.startId) {
+      const target = ev.target;
+      const endId = target.getAttribute('data-swap-id');
+      swapItemsRef.current = { ...swapItemsRef.current, endId };
+      const { startId } = swapItemsRef.current ?? {};
+      if (startId && endId) {
+        setOrderedItems([...swapItemsInArray(orderedItems, startId, endId)]);
+        setIsDragging(false);
+      }
+    }
   };
 
   const handleMouseUp = (ev: any) => {
     ev.preventDefault();
     ev.stopPropagation();
-    const target = ev.target;
-    const endId = target.getAttribute('data-swap-id');
-    swapItemsRef.current = { ...swapItemsRef.current, endId };
-    const { startId } = swapItemsRef.current ?? {};
-    if (startId && endId) {
-      setOrderedItems([...swapItemsInArray(orderedItems, startId, endId)]);
+    handleStopDragging(ev);
+    swapItemsRef.current = null;
+  };
+
+  const handleMouseMove = (ev: any) => {
+    if (isDragging) {
+      if (swapItemsRef.current?.startId) {
+        const target = ev.target;
+        const endId = target.getAttribute('data-swap-id');
+        swapItemsRef.current = { ...swapItemsRef.current, endId };
+        const { startId } = swapItemsRef.current ?? {};
+        if (startId && endId && dragElRef.current && parentRef.current) {
+          const endEl = ev.target as HTMLLIElement;
+          const dragEl = dragElRef.current;
+          const parentEl = parentRef.current;
+          const parentRect = parentEl.getBoundingClientRect();
+          const currentElRect = endEl.getBoundingClientRect();
+          dragEl.style.top = `${currentElRect.top - parentRect.top}px`;
+          dragEl.style.height = `${currentElRect.height}px`;
+        }
+      }
     }
   };
 
@@ -94,10 +141,13 @@ export function DraggableList<T extends ObjectItemType>(
 
   return (
     <ParentContainer
+      ref={parentRef}
       className="dragContainer"
-      onMouseDown={handleMouseDown}
+      onMouseDown={handleStartDragging}
       onMouseUp={handleMouseUp}
+      onMouseMove={handleMouseMove}
     >
+      {isDragging && <DragIndicator ref={dragElRef} />}
       {orderedItems.map((currItem) => (
         <ChildContainer data-swap-id={currItem.id} key={currItem.id}>
           {itemLabelGenerator(currItem.item)}
