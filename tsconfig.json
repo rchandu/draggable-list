@@ -16,6 +16,9 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
+  "outDir": "dist",
+  "declaration": true,
+  "types": "./dist/types/index.d.ts",
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

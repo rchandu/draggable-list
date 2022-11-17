@@ -1,27 +1,26 @@
 import { defineConfig } from 'vite';
+import dts from 'vite-plugin-dts';
 import { resolve } from 'path';
 import react from '@vitejs/plugin-react';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), dts({ insertTypesEntry: true })],
   build: {
     lib: {
       // Could also be a dictionary or array of multiple entry points
       entry: resolve(__dirname, 'src/lib/index.tsx'),
-      name: 'DraggableList',
-      // the proper extensions will be added
-      fileName: 'draggable-list'
+      name: 'Draggable',
+      formats: ['es', 'umd'],
+      fileName: (format) => `draggable.${format}.js`
     },
     rollupOptions: {
-      // make sure to externalize deps that shouldn't be bundled
-      // into your library
-      external: ['reac'],
+      external: ['react', 'react-dom', 'styled-components'],
       output: {
-        // Provide global variables to use in the UMD build
-        // for externalized deps
         globals: {
-          react: 'React'
+          react: 'React',
+          'react-dom': 'ReactDOM',
+          'styled-components': 'styled'
         }
       }
     }

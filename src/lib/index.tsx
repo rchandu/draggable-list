@@ -1,3 +1,3 @@
-export const DraggableComponent: React.FC = () => {
-  return <div>Hello world</div>;
-};
+import { DraggableList } from './DraggableList';
+
+export default { DraggableList };
