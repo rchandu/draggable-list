@@ -8,20 +8,20 @@ export default defineConfig({
   build: {
     lib: {
       // Could also be a dictionary or array of multiple entry points
-      entry: resolve(__dirname, 'lib/main.js'),
-      name: 'MyLib',
+      entry: resolve(__dirname, 'src/lib/index.tsx'),
+      name: 'DraggableList',
       // the proper extensions will be added
-      fileName: 'my-lib'
+      fileName: 'draggable-list'
     },
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
       // into your library
-      external: ['vue'],
+      external: ['reac'],
       output: {
         // Provide global variables to use in the UMD build
         // for externalized deps
         globals: {
-          vue: 'Vue'
+          react: 'React'
         }
       }
     }
