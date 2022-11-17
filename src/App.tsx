@@ -45,7 +45,10 @@ function App() {
           ))}
         </select>
       </section>
-      <div>{CurrentComponent && <CurrentComponent />}</div>
+      <section>
+        <h1>{currentExample?.displayName ?? ''}</h1>
+        <div>{CurrentComponent && <CurrentComponent />}</div>
+      </section>
     </div>
   );
 }

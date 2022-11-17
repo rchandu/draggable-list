@@ -28,16 +28,20 @@ function swapItemsInArray(
 const wrapItems = (items: any[] = []) =>
   items.map((x, idx) => ({ item: x, id: `${idx}` }));
 
-const getItemLabelFn = (props: DraggableListProps) => {
+function getItemLabelFn<T extends ObjectItemType>(
+  props: DraggableListProps<T>
+) {
   if ('labelKey' in props) {
     const labelKey = props.labelKey;
-    return (i: ObjectItemType) => i[labelKey] ?? '';
+    return (i: T) => i[labelKey] ?? '';
   } else {
     return (i: string) => i;
   }
-};
+}
 
-export function DraggableList<T>(props: DraggableListProps) {
+export function DraggableList<T extends ObjectItemType>(
+  props: DraggableListProps<T>
+) {
   const [orderedItems, setOrderedItems] = useState<WrappedItem[]>([]);
   const swapItemsRef = useRef<SwapTarget | null>();
 

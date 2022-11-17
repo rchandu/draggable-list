@@ -18,7 +18,6 @@ const demoItems: DemoType[] = [
 const SimpleListSwap: React.FC = () => {
   return (
     <div>
-      <h1>Demo for draggable list</h1>
       <DraggableList items={demoItems} labelKey="displayName" />
     </div>
   );

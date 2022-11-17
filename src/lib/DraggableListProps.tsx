@@ -4,9 +4,11 @@ export interface DraggableStringList {
   items: string[];
 }
 
-export interface DraggableListWithObject<T extends ObjectItemType = {}> {
+export interface DraggableListWithObject<T extends ObjectItemType> {
   items: T[];
   labelKey: keyof T;
 }
 
-export type DraggableListProps = DraggableStringList | DraggableListWithObject;
+export type DraggableListProps<T extends ObjectItemType> =
+  | DraggableStringList
+  | DraggableListWithObject<T>;

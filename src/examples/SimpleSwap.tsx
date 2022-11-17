@@ -13,7 +13,6 @@ const demoItems: string[] = [
 const SimpleSwap: React.FC = () => {
   return (
     <div>
-      <h1>Demo for draggable list with simple strings</h1>
       <DraggableList items={demoItems} />
     </div>
   );
