@@ -1,5 +1,7 @@
+import styled from '@emotion/styled';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { DraggableListProps, ObjectItemType } from './DraggableListProps';
+
 type SwapTarget = { startId?: string; endId?: string };
 
 interface WrappedItem<T = any> {
@@ -39,6 +41,22 @@ function getItemLabelFn<T extends ObjectItemType>(
   }
 }
 
+const ParentContainer = styled.ul`
+  display: flex;
+  flex-direction: column;
+  list-style-type: none;
+  gap: 16px;
+`;
+
+const ChildContainer = styled.li`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dotted blue;
+  padding: 16px;
+  cursor: move;
+`;
+
 export function DraggableList<T extends ObjectItemType>(
   props: DraggableListProps<T>
 ) {
@@ -75,17 +93,17 @@ export function DraggableList<T extends ObjectItemType>(
   );
 
   return (
-    <ul
+    <ParentContainer
       className="dragContainer"
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
     >
       {orderedItems.map((currItem) => (
-        <li data-swap-id={currItem.id} key={currItem.id}>
+        <ChildContainer data-swap-id={currItem.id} key={currItem.id}>
           {itemLabelGenerator(currItem.item)}
-        </li>
+        </ChildContainer>
       ))}
-    </ul>
+    </ParentContainer>
   );
 }
 
